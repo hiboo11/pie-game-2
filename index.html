@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PIE Challenge • القرعة التفاعلية | Programme d'Innovation Entrepreneuriale</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎡</text></svg>" />
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Cairo for Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            mauve: {
+              50: '#FAF5FF',
+              100: '#F3E8FF',
+              200: '#E9D5FF',
+              300: '#D8B4FE',
+              400: '#C084FC',
+              500: '#A855F7',
+              600: '#9333EA',
+              700: '#7E22CE',
+              800: '#6B21A8',
+              900: '#581C87',
+              950: '#3B0764',
+            },
+            pastelPink: {
+              50: '#FDF2F8',
+              100: '#FCE7F3',
+              200: '#FBCFE8',
+              300: '#F9A8D4',
+              400: '#F472B6',
+              500: '#EC4899',
+              600: '#DB2777',
+              700: '#BE185D',
+              800: '#9D174D',
+              900: '#831843',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            arabic: ['"Cairo"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            'soft': '0 10px 30px -5px rgba(192, 132, 252, 0.18), 0 4px 12px -2px rgba(244, 114, 182, 0.12)',
+            'card': '0 12px 36px -4px rgba(168, 85, 247, 0.14), 0 4px 16px -2px rgba(236, 72, 153, 0.08)',
+            'glow': '0 0 25px rgba(192, 132, 252, 0.5)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar & Aesthetics */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(243, 232, 255, 0.5);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D8B4FE;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C084FC;
+    }
+
+    body {
+      background: linear-gradient(135deg, #FAF5FF 0%, #FDF2F8 50%, #F5EEF8 100%);
+      min-height: 100vh;
+      color: #374151;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(233, 213, 255, 0.7);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(244, 114, 182, 0.2);
+    }
+
+    /* Soft Animated Background Blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.45;
+      z-index: 0;
+      pointer-events: none;
+      animation: float 14s ease-in-out infinite alternate;
+    }
+    .blob-1 {
+      top: -60px;
+      left: -60px;
+      width: 360px;
+      height: 360px;
+      background: #E9D5FF;
+      animation-duration: 16s;
+    }
+    .blob-2 {
+      bottom: -60px;
+      right: -60px;
+      width: 420px;
+      height: 420px;
+      background: #FCE7F3;
+      animation-duration: 20s;
+    }
+    .blob-3 {
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 320px;
+      height: 320px;
+      background: #DDD6FE;
+      animation-duration: 24s;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(30px) scale(1.08); }
+    }
+
+    /* Modal Animation */
+    @keyframes modalEnter {
+      0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .modal-animate {
+      animation: modalEnter 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Pointer pulse */
+    @keyframes pointerBob {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-4px) scale(1.06); }
+    }
+    .pointer-bob {
+      animation: pointerBob 1.6s ease-in-out infinite;
+    }
+
+    /* Custom Radio styling */
+    .option-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .option-card:hover {
+      transform: translateY(-2px);
+      border-color: #C084FC;
+      background: #FAF5FF;
+    }
+    .option-card.selected {
+      border-color: #9333EA;
+      background: #F3E8FF;
+      box-shadow: 0 4px 14px -2px rgba(168, 85, 247, 0.2);
+    }
+  </style>
+</head>
+<body class="relative flex flex-col min-h-screen overflow-x-hidden selection:bg-mauve-200 selection:text-mauve-900">
+
+  <!-- Ambient Blurred Pastels -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Fullscreen Confetti Canvas -->
+  <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50 w-full h-full"></canvas>
+
+  <!-- Top Navigation / Header -->
+  <header class="relative z-10 w-full px-4 sm:px-8 pt-5 pb-3">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel px-6 py-3.5 rounded-3xl shadow-soft">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center gap-3.5 text-center sm:text-left">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-mauve-400 to-pastelPink-400 flex items-center justify-center text-white shadow-md text-xl transform hover:rotate-12 transition-transform">
+          💡
+        </div>
+        <div>
+          <div class="flex items-center gap-2 justify-center sm:justify-start">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-mauve-100 text-mauve-800 border border-mauve-200">
+              OFPPT × UM6P
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-pastelPink-100 text-pastelPink-700 border border-pastelPink-200">
+              PIE Module 1
+            </span>
+          </div>
+          <h1 class="text-lg sm:text-xl font-extrabold text-mauve-950 tracking-tight flex items-center gap-2">
+            Programme d'Innovation Entrepreneuriale
+            <span class="text-sm font-bold text-mauve-600 font-arabic">(القرعة التفاعلية)</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-2">
+        <!-- Sound Toggle -->
+        <button id="soundToggleBtn" title="Activer / Couper le son" class="p-2.5 rounded-2xl glass-card hover:bg-mauve-100 text-mauve-800 transition-colors flex items-center gap-1.5 text-xs font-medium border border-mauve-200 shadow-sm">
+          <span id="soundIcon" class="text-base">🔊</span>
+          <span id="soundLabel" class="hidden md:inline">Son Activé</span>
+        </button>
+
+        <!-- Question Bank Preview -->
+        <button id="questionsBankBtn" title="Consulter la banque des 15 questions" class="p-2.5 rounded-2xl glass-card hover:bg-mauve-100 text-mauve-800 transition-colors flex items-center gap-1.5 text-xs font-medium border border-mauve-200 shadow-sm">
+          <span>📚</span>
+          <span class="hidden md:inline">Questions (15)</span>
+        </button>
+
+        <!-- Fullscreen Button -->
+        <button id="fullscreenBtn" title="Mode Plein Écran (Présentation)" class="p-2.5 rounded-2xl glass-card hover:bg-mauve-100 text-mauve-800 transition-colors flex items-center gap-1.5 text-xs font-medium border border-mauve-200 shadow-sm">
+          <span id="fsIcon">⛶</span>
+          <span class="hidden md:inline">Plein Écran</span>
+        </button>
+
+        <!-- Reset Button -->
+        <button id="resetGameBtn" title="Réinitialiser la session" class="p-2.5 rounded-2xl glass-card hover:bg-rose-50 text-rose-600 transition-colors flex items-center gap-1.5 text-xs font-medium border border-rose-200 shadow-sm">
+          <span>🔄</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Stage -->
+  <main class="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-4 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    
+    <!-- LEFT / MAIN: Spinning Wheel Section (8 Cols) -->
+    <section class="lg:col-span-8 flex flex-col items-center justify-center glass-panel p-6 sm:p-8 rounded-3xl shadow-card">
+      
+      <!-- Top Wheel Info & Status -->
+      <div class="w-full flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-xs font-bold uppercase tracking-wider text-mauve-900">Roue de la Classe (15 Étudiants)</span>
+        </div>
+        <div class="text-xs font-semibold text-mauve-700 bg-mauve-100/80 px-3 py-1 rounded-full border border-mauve-200 flex items-center gap-1.5">
+          <span>🎯 Tour en cours :</span>
+          <span id="currentTurnName" class="font-bold text-mauve-950">Prêt à tourner !</span>
+        </div>
+      </div>
+
+      <!-- Canvas Wheel Container -->
+      <div class="relative flex items-center justify-center my-2 p-2 sm:p-4 select-none">
+        
+        <!-- Glowing Ring Halo -->
+        <div class="absolute inset-0 m-auto w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] rounded-full bg-gradient-to-tr from-mauve-300/40 via-pastelPink-300/40 to-mauve-200/30 blur-2xl pointer-events-none"></div>
+
+        <!-- Wheel Canvas -->
+        <canvas id="wheelCanvas" width="520" height="520" class="relative z-10 max-w-[340px] max-h-[340px] sm:max-w-[460px] sm:max-h-[460px] md:max-w-[480px] md:max-h-[480px] w-full h-full drop-shadow-xl transition-transform duration-300"></canvas>
+
+        <!-- Elegant Top Pointer (Flèche) -->
+        <div class="absolute -top-3 z-20 pointer-bob flex flex-col items-center pointer-events-none filter drop-shadow-md">
+          <div class="w-7 h-10 bg-gradient-to-b from-pastelPink-500 via-mauve-600 to-mauve-800 rounded-t-md shadow-lg border-2 border-white" style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"></div>
+        </div>
+
+        <!-- Center Hub Over Canvas -->
+        <div class="absolute z-20 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/95 shadow-lg border-4 border-mauve-200 flex flex-col items-center justify-center text-center pointer-events-none">
+          <span class="text-lg sm:text-2xl">✨</span>
+          <span class="text-[10px] sm:text-xs font-extrabold text-mauve-900 tracking-tighter">PIE</span>
+        </div>
+
+      </div>
+
+      <!-- Wheel Controls & Spin Button -->
+      <div class="w-full max-w-md mt-4 flex flex-col items-center gap-3">
+        
+        <button id="spinBtn" class="group relative w-full py-4 px-8 rounded-2xl bg-gradient-to-r from-mauve-500 via-mauve-600 to-pastelPink-500 hover:from-mauve-600 hover:to-pastelPink-600 text-white font-bold text-lg sm:text-xl shadow-lg hover:shadow-glow transform active:scale-95 transition-all duration-200 flex items-center justify-center gap-3">
+          <span class="text-2xl group-hover:rotate-180 transition-transform duration-500">🎡</span>
+          <span class="tracking-wide">دور القرعة • Lancer le Tour</span>
+          <span class="text-xl">✨</span>
+        </button>
+
+        <!-- Optional Option: Remove picked student toggle -->
+        <label class="flex items-center gap-2.5 text-xs text-mauve-800 cursor-pointer select-none bg-white/60 px-4 py-2 rounded-xl border border-mauve-200 hover:bg-white transition-colors">
+          <input type="checkbox" id="removePickedToggle" class="w-4 h-4 text-mauve-600 rounded border-mauve-300 focus:ring-mauve-400">
+          <span>Ne pas retirer les élèves déjà passés (Garder tout le monde dans la roue)</span>
+        </label>
+
+      </div>
+
+    </section>
+
+    <!-- RIGHT: Students Progress & Class Tracker (4 Cols) -->
+    <aside class="lg:col-span-4 flex flex-col gap-4">
+      
+      <!-- Class Stats Card -->
+      <div class="glass-panel p-5 rounded-3xl shadow-soft">
+        <h3 class="text-sm font-bold text-mauve-950 flex items-center justify-between mb-3">
+          <span class="flex items-center gap-2">
+            <span>👥</span> Liste de la Classe
+          </span>
+          <span id="progressBadge" class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-mauve-100 text-mauve-800 border border-mauve-200">
+            0 / 15 Passés
+          </span>
+        </h3>
+
+        <!-- Mini Progress Bar -->
+        <div class="w-full bg-mauve-100 rounded-full h-2 mb-4 overflow-hidden">
+          <div id="progressBar" class="bg-gradient-to-r from-mauve-400 to-pastelPink-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <!-- Student Cards List -->
+        <div id="studentsListContainer" class="flex flex-col gap-2 max-h-[380px] sm:max-h-[440px] overflow-y-auto pr-1">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Action footer on sidebar -->
+        <div class="mt-4 pt-3 border-t border-mauve-100 flex items-center justify-between text-xs text-mauve-700">
+          <span>💡 Cliquez sur un nom pour le choisir directement</span>
+        </div>
+      </div>
+
+      <!-- Quick Guidance / Rule Card -->
+      <div class="glass-card p-4 rounded-2xl text-xs text-mauve-900 border border-pastelPink-200/80 bg-pastelPink-50/50">
+        <div class="font-bold text-pastelPink-900 flex items-center gap-1.5 mb-1">
+          <span>🎯</span> Règle du Jeu PIE :
+        </div>
+        <p class="leading-relaxed">
+          La roue sélectionne un élève au hasard. S'il répond juste : <strong>Bravo 🎉 Jawab S7i7 !</strong> S'il fait une erreur : <strong>Ḥkma 🎭 (Défi amusant pour la classe)</strong> !
+        </p>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 1: QUIZ QUESTION MODAL                             -->
+  <!-- ======================================================== -->
+  <div id="quizModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-mauve-950/40 backdrop-blur-sm hidden">
+    <div class="relative w-full max-w-2xl bg-white/95 rounded-3xl shadow-2xl border border-mauve-200 p-6 sm:p-8 modal-animate max-h-[92vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between gap-4 pb-4 border-b border-mauve-100">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-mauve-400 to-pastelPink-400 text-white flex items-center justify-center text-2xl shadow-md">
+            🎓
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="modalQuestionBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-mauve-100 text-mauve-800 border border-mauve-200">
+                Question N° 1
+              </span>
+              <span class="text-xs text-mauve-500 font-medium">Programme PIE</span>
+            </div>
+            <h2 id="modalStudentTitle" class="text-lg sm:text-xl font-extrabold text-mauve-950 mt-0.5">
+              [Nom de l'élève], c'est ton tour !
+            </h2>
+          </div>
+        </div>
+
+        <button id="closeQuizModalBtn" title="Fermer" class="text-mauve-400 hover:text-mauve-700 text-2xl font-bold p-1 rounded-lg hover:bg-mauve-50 transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- Question Text -->
+      <div class="my-5">
+        <p class="text-xs uppercase font-extrabold tracking-wider text-mauve-500 mb-1.5">Énoncé de la question :</p>
+        <p id="quizQuestionText" class="text-base sm:text-lg font-bold text-gray-800 leading-snug">
+          Chargement de la question...
+        </p>
+      </div>
+
+      <!-- Options Container (A, B, C) -->
+      <div id="quizOptionsContainer" class="flex flex-col gap-3 mb-6">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Validation Button -->
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <div id="selectionHint" class="text-xs text-mauve-500 font-medium italic">
+          Sélectionnez une option pour continuer.
+        </div>
+        <button id="submitAnswerBtn" disabled class="py-3 px-7 rounded-xl bg-gradient-to-r from-mauve-500 to-pastelPink-500 hover:from-mauve-600 hover:to-pastelPink-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm sm:text-base shadow-md transition-all flex items-center gap-2">
+          <span>Valider la réponse</span>
+          <span>✨</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 2: SUCCESS / BRAVO SCREEN (Jawab S7i7)             -->
+  <!-- ======================================================== -->
+  <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-emerald-950/40 backdrop-blur-sm hidden">
+    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-emerald-200 p-6 sm:p-8 modal-animate text-center">
+      
+      <!-- Top Celebration Graphic -->
+      <div class="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-emerald-400 to-teal-300 text-white flex items-center justify-center text-4xl shadow-glow transform rotate-3">
+        🎉
+      </div>
+
+      <span class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-2 border border-emerald-200">
+        Réponse Validée
+      </span>
+
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-950 tracking-tight font-arabic mb-1">
+        Bravo ! 🎉 Jawab S7i7 !
+      </h2>
+      <p class="text-sm font-semibold text-emerald-700 font-arabic mb-4">
+        (جواب صحيح وممتاز !)
+      </p>
+
+      <div class="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-4 text-left mb-6">
+        <div class="text-xs font-bold text-emerald-800 uppercase tracking-wide mb-1">
+          Bonne réponse confirmée :
+        </div>
+        <p id="successAnswerText" class="text-sm sm:text-base font-semibold text-emerald-950">
+          ...
+        </p>
+      </div>
+
+      <button id="successNextBtn" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-base shadow-lg transition-all flex items-center justify-center gap-2">
+        <span>Tour Suivant • Continuer la partie</span>
+        <span>➡️</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 3: PENALTY / ḤKMA MODAL (حكمة)                     -->
+  <!-- ======================================================== -->
+  <div id="penaltyModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pastelPink-950/40 backdrop-blur-sm hidden">
+    <div class="relative w-full max-w-xl bg-white/95 rounded-3xl shadow-2xl border border-pastelPink-200 p-6 sm:p-8 modal-animate text-center max-h-[92vh] overflow-y-auto">
+      
+      <!-- Penalty Badge Icon -->
+      <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-tr from-pastelPink-400 via-rose-400 to-mauve-500 text-white flex items-center justify-center text-3xl shadow-soft transform -rotate-3">
+        🎭
+      </div>
+
+      <span class="inline-block px-3 py-1 rounded-full bg-pastelPink-100 text-pastelPink-800 text-xs font-bold uppercase tracking-wider mb-2 border border-pastelPink-200">
+        Oups, mauvaise réponse !
+      </span>
+
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-mauve-950 tracking-tight font-arabic mb-0.5">
+        Ḥkma ! 🎭 / حكمة
+      </h2>
+      <p class="text-xs sm:text-sm text-mauve-700 mb-4">
+        Dans l'entrepreneuriat, chaque erreur est une leçon ! Choisis ton défi officiel pour amuser la classe :
+      </p>
+
+      <!-- The Revealed Correct Answer -->
+      <div class="bg-mauve-50 border border-mauve-200 rounded-2xl p-3 text-left mb-5 text-xs">
+        <span class="font-bold text-mauve-800 block mb-0.5">💡 La bonne réponse était :</span>
+        <span id="penaltyCorrectAnswerText" class="font-medium text-mauve-950 text-sm"></span>
+      </div>
+
+      <!-- Action Choice View: Yghni 🎤 vs Ichth 💃 -->
+      <div id="penaltyChoiceView" class="mb-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          
+          <!-- 1. Yghni (Chanter) Button -->
+          <button id="btnYghni" type="button" class="group relative flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-mauve-50 via-white to-mauve-100 border-2 border-mauve-300 hover:border-mauve-500 hover:shadow-soft hover:-translate-y-1 transition-all duration-200 text-center">
+            <span class="text-4xl mb-2 transform group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">🎤</span>
+            <span class="text-lg font-black text-mauve-950 tracking-tight">Yghni 🎤</span>
+            <span class="text-xs font-bold text-mauve-600 mb-1">(Chanter)</span>
+            <span class="text-[11px] text-mauve-500 leading-tight">Lancer la chanson officielle du challenge</span>
+            <span class="mt-2.5 text-[10px] px-2.5 py-1 rounded-full bg-mauve-200 text-mauve-900 font-bold flex items-center gap-1">
+              Voir la vidéo ▶
+            </span>
+          </button>
+
+          <!-- 2. Ichth (Danser) Button -->
+          <button id="btnIchth" type="button" class="group relative flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-pastelPink-50 via-white to-pastelPink-100 border-2 border-pastelPink-300 hover:border-pastelPink-500 hover:shadow-soft hover:-translate-y-1 transition-all duration-200 text-center">
+            <span class="text-4xl mb-2 transform group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-300">💃</span>
+            <span class="text-lg font-black text-pastelPink-950 tracking-tight">Ichth 💃</span>
+            <span class="text-xs font-bold text-pastelPink-600 mb-1">(Danser)</span>
+            <span class="text-[11px] text-pastelPink-600 leading-tight">Suivre la chorégraphie officielle</span>
+            <span class="mt-2.5 text-[10px] px-2.5 py-1 rounded-full bg-pastelPink-200 text-pastelPink-900 font-bold flex items-center gap-1">
+              Voir la vidéo ▶
+            </span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Video Player View (shows when user clicks either challenge) -->
+      <div id="penaltyVideoView" class="hidden mb-5">
+        <div class="flex items-center justify-between mb-2 px-1">
+          <span id="penaltyVideoTitle" class="text-xs font-bold text-mauve-950 flex items-center gap-1.5">
+            🎤 Défi Officiel
+          </span>
+          <button id="btnBackToChoices" type="button" class="text-xs text-mauve-600 hover:text-mauve-950 font-semibold underline flex items-center gap-1">
+            <span>↩ Changer de défi</span>
+          </button>
+        </div>
+
+        <!-- Responsive Iframe Container -->
+        <div class="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-mauve-200 shadow-md bg-black">
+          <iframe id="penaltyVideoIframe" class="w-full h-full" src="" title="Défi Vidéo PIE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+
+        <!-- Video Control Toolbar & Timer -->
+        <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <a id="penaltyDirectYoutubeLink" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-pastelPink-800 hover:text-pastelPink-950 font-bold bg-pastelPink-100 hover:bg-pastelPink-200 px-3 py-1.5 rounded-xl border border-pastelPink-300 transition-colors">
+            <span>Ouvrir sur YouTube</span>
+            <span>↗️</span>
+          </a>
+
+          <!-- Interactive 10s Timer for the class -->
+          <button id="startTimerBtn" type="button" class="px-3.5 py-1.5 rounded-xl bg-mauve-100 hover:bg-mauve-200 text-mauve-900 font-bold transition-colors flex items-center gap-1.5">
+            <span>⏱️ Chrono 10s :</span>
+            <span id="timerDisplay" class="font-mono text-sm font-black">10</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Complete Challenge Button -->
+      <button id="penaltyDoneBtn" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-mauve-500 via-mauve-600 to-pastelPink-500 hover:from-mauve-600 hover:to-pastelPink-600 text-white font-bold text-base shadow-lg transition-all flex items-center justify-center gap-2">
+        <span>Défi relevé avec brio ! 👏</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 4: QUESTIONS BANK VIEWER (Presenter Drawer)        -->
+  <!-- ======================================================== -->
+  <div id="bankModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-mauve-950/40 backdrop-blur-sm hidden">
+    <div class="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-mauve-200 p-6 modal-animate max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-mauve-100">
+        <div>
+          <h2 class="text-lg font-bold text-mauve-950 flex items-center gap-2">
+            <span>📚</span> Banque des 15 Questions PIE
+          </h2>
+          <p class="text-xs text-mauve-600">Vue d'ensemble du programme pour l'animateur</p>
+        </div>
+        <button id="closeBankModalBtn" class="text-mauve-400 hover:text-mauve-700 text-2xl font-bold p-1">✕</button>
+      </div>
+
+      <div id="bankListContainer" class="flex-1 overflow-y-auto py-4 flex flex-col gap-3 pr-1 text-xs">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="relative z-10 w-full py-3 text-center text-xs text-mauve-600 font-medium">
+    Programme d'Innovation Entrepreneuriale • OFPPT × UM6P • Promotion 2026
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- APPLICATION SCRIPT                                       -->
+  <!-- ======================================================== -->
+  <script>
+    /* ==========================================================
+       1. DATASETS: 15 STUDENTS, 15 QUESTIONS & FUN CHALLENGES
+       ========================================================== */
+    const STUDENTS = [
+      { id: 1, name: "Makram Toussa", played: false, status: "pending" },
+      { id: 2, name: "Ilyas Chokri", played: false, status: "pending" },
+      { id: 3, name: "Younes Tounf", played: false, status: "pending" },
+      { id: 4, name: "Abdellatif El Youssfi", played: false, status: "pending" },
+      { id: 5, name: "Asmae Bantar", played: false, status: "pending" },
+      { id: 6, name: "Assia Lkouch", played: false, status: "pending" },
+      { id: 7, name: "Zaynab Lahbib", played: false, status: "pending" },
+      { id: 8, name: "Khadija Achtouk", played: false, status: "pending" },
+      { id: 9, name: "Redouane Amjoud", played: false, status: "pending" },
+      { id: 10, name: "Hamza Gouijjane", played: false, status: "pending" },
+      { id: 11, name: "Issam Ouasbir", played: false, status: "pending" },
+      { id: 12, name: "Achraf Ait Bousseghane", played: false, status: "pending" },
+      { id: 13, name: "Mohamed Ait Chiaar", played: false, status: "pending" },
+      { id: 14, name: "Abdelhamid Taysse", played: false, status: "pending" },
+      { id: 15, name: "Fatima Ezzahrae Sghiouire", played: false, status: "pending" },
+    ];
+
+    const QUESTIONS = [
+      {
+        id: 1,
+        question: "Qu'est-ce que le Programme d'Innovation Entrepreneuriale (PIE) ?",
+        options: [
+          { key: "A", text: "Une formation uniquement pour devenir riche rapidement." },
+          { key: "B", text: "Une collaboration entre l'OFPPT et l'Université Mohammed VI Polytechnique (UM6P) pour développer l'entrepreneuriat." },
+          { key: "C", text: "Un programme réservé aux grands patrons des années 90." }
+        ],
+        correct: "B",
+        explanation: "Le PIE est un partenariat stratégique d'excellence entre l'OFPPT et l'UM6P visant à développer la culture entrepreneuriale chez les apprenants."
+      },
+      {
+        id: 2,
+        question: "Quel est l'un des objectifs principaux du programme ?",
+        options: [
+          { key: "A", text: "Apprendre à devenir un acteur du changement et développer son potentiel." },
+          { key: "B", text: "Trouver un travail dans la fonction publique uniquement." },
+          { key: "C", text: "Éviter de travailler en groupe." }
+        ],
+        correct: "A",
+        explanation: "Le PIE encourage chaque jeune à devenir un acteur proactif du changement et à libérer son plein potentiel d'innovation."
+      },
+      {
+        id: 3,
+        question: "Qu'est-ce qu'un problème entrepreneurial selon le cours ?",
+        options: [
+          { key: "A", text: "Un problème insoluble que personne ne peut régler." },
+          { key: "B", text: "Un besoin ou un manque que rencontre un client dans son quotidien." },
+          { key: "C", text: "Une erreur commise par l'entrepreneur." }
+        ],
+        correct: "B",
+        explanation: "Pour un entrepreneur, un problème correspond toujours à un besoin insatisfait ou une friction vécue par un groupe d'individus."
+      },
+      {
+        id: 4,
+        question: "Pourquoi la plupart des grands entrepreneurs à succès se sont-ils lancés au départ ?",
+        options: [
+          { key: "A", text: "Pour devenir célèbres à tout prix." },
+          { key: "B", text: "Pour résoudre un problème et simplifier la vie de leurs clients." },
+          { key: "C", text: "Pour ne jamais travailler." }
+        ],
+        correct: "B",
+        explanation: "La véritable motivation des grands bâtisseurs est de simplifier la vie quotidienne des gens en leur apportant une solution à forte valeur."
+      },
+      {
+        id: 5,
+        question: "Comment un entrepreneur doit-il réagir face à un problème ?",
+        options: [
+          { key: "A", text: "Il doit abandonner et dire que c'est impossible." },
+          { key: "B", text: "Il doit critiquer le système en place." },
+          { key: "C", text: "Il doit chercher des solutions créatives et être orienté solution." }
+        ],
+        correct: "C",
+        explanation: "L'attitude entrepreneuriale par excellence est de rester axé sur les opportunités et la recherche de solutions créatives."
+      },
+      {
+        id: 6,
+        question: "Qu'est-ce que la marque \"Citron\" fondée par une maman entrepreneur ?",
+        options: [
+          { key: "A", text: "Des boîtes de repas pratiques et compartimentées pour les enfants." },
+          { key: "B", text: "Des sacs élégants pour ordinateurs portables." },
+          { key: "C", text: "Des chaussures marocaines traditionnelles." }
+        ],
+        correct: "A",
+        explanation: "Partant d'un besoin personnel pour son propre fils, cette fondatrice a conçu des boîtes repas innovantes et étanches pour enfants."
+      },
+      {
+        id: 7,
+        question: "Que propose l'entreprise sociale \"ANOU\" ?",
+        options: [
+          { key: "A", text: "Un site web pour aider les artisans marocains à vendre directement sans intermédiaires." },
+          { key: "B", text: "Une application de transport scolaire." },
+          { key: "C", text: "Des cours de soutien pour les jeunes filles en milieu rural." }
+        ],
+        correct: "A",
+        explanation: "ANOU est une coopérative numérique pionnière qui connecte directement les artisans marocains aux marchés internationaux sans intermédiaire."
+      },
+      {
+        id: 8,
+        question: "Qui est Youssef Ouechen ?",
+        options: [
+          { key: "A", text: "Un célèbre cuisinier marocain." },
+          { key: "B", text: "Un photographe marocain reconnu mondialement qui a grandi à Sidi Moumen." },
+          { key: "C", text: "Le fondateur de l'OFPPT." }
+        ],
+        correct: "B",
+        explanation: "Youssef Ouechen est l'exemple inspirant d'un talent autodidacte issu de Sidi Moumen devenu photographe international de mode et d'art."
+      },
+      {
+        id: 9,
+        question: "Devenir riche et connu, c'est quoi pour un entrepreneur ?",
+        options: [
+          { key: "A", text: "Le point de départ obligatoire de tout projet." },
+          { key: "B", text: "La conséquence d'un chemin entrepreneurial réussi et non l'objectif ultime." },
+          { key: "C", text: "Le seul critère pour réussir." }
+        ],
+        correct: "B",
+        explanation: "La richesse et la renommée sont le sous-produit naturel d'une valeur réelle apportée aux autres, pas une fin en soi."
+      },
+      {
+        id: 10,
+        question: "Quelle est l'attitude d'un entrepreneur face aux difficultés ?",
+        options: [
+          { key: "A", text: "Positif, curieux et résilient." },
+          { key: "B", text: "Passif et pessimiste." },
+          { key: "C", text: "Indifférent face aux besoins des autres." }
+        ],
+        correct: "A",
+        explanation: "La résilience, l'optimisme constructif et la curiosité constituent le socle de l'état d'esprit entrepreneurial."
+      },
+      {
+        id: 11,
+        question: "Que signifie le proverbe africain cité dans le module : \"Seul on va plus vite, ensemble on va plus loin\" ?",
+        options: [
+          { key: "A", text: "Qu'il faut travailler de manière totalement isolée." },
+          { key: "B", text: "Que la réussite dans le programme est collective et basée sur l'entraide." },
+          { key: "C", text: "Qu'il ne faut pas écouter ses collègues." }
+        ],
+        correct: "B",
+        explanation: "L'esprit d'équipe, l'intelligence collective et la complémentarité sont essentiels pour faire grandir un projet durablement."
+      },
+      {
+        id: 12,
+        question: "Comment un entrepreneur sans argent ni local peut-il commencer ?",
+        options: [
+          { key: "A", text: "En abandonnant son idée immédiatement." },
+          { key: "B", text: "En étant créatif et en cherchant des solutions alternatives pour démarrer avec ses moyens." },
+          { key: "C", text: "En attendant de gagner à la loterie." }
+        ],
+        correct: "B",
+        explanation: "Principe fondamental de l'effectuation : commencer avec les ressources dont on dispose immédiatement (qui je suis, ce que je sais, qui je connais)."
+      },
+      {
+        id: 13,
+        question: "Quelle est l'une des compétences clés développées dans le module 1 ?",
+        options: [
+          { key: "A", text: "Savoir résoudre des problèmes et trouver des solutions créatives." },
+          { key: "B", text: "Ne jamais poser de questions." },
+          { key: "C", text: "Travailler uniquement seul." }
+        ],
+        correct: "A",
+        explanation: "Le premier module pose les bases de l'observation, de l'empathie et de la créativité pour formuler des réponses adaptées aux besoins réels."
+      },
+      {
+        id: 14,
+        question: "Que faut-il faire dès que l'on détecte un problème au quotidien ?",
+        options: [
+          { key: "A", text: "Se demander comment on pourrait le résoudre." },
+          { key: "B", text: "L'ignorer complètement." },
+          { key: "C", text: "Attendre que quelqu'un d'autre le règle à notre place." }
+        ],
+        correct: "A",
+        explanation: "Un esprit d'entrepreneur transforme immédiatement un irritant ou une frustration du quotidien en question de conception créative."
+      },
+      {
+        id: 15,
+        question: "Selon le cours, à qui s'adresse principalement ce programme d'entrepreneuriat ?",
+        options: [
+          { key: "A", text: "Uniquement aux personnes qui possèdent déjà de grandes fortunes (\"مول الشكارة\")." },
+          { key: "B", text: "Aux personnes ordinaires, motivées, qui ont des valeurs et veulent gagner honnêtement leur vie." },
+          { key: "C", text: "Exclusivement aux investisseurs étrangers." }
+        ],
+        correct: "B",
+        explanation: "L'entrepreneuriat est à la portée de tous : des personnes ordinaires qui allient éthique, motivation et travail persévérant."
+      }
+    ];
+
+    const FUN_CHALLENGES = [
+      "Ichth / Danse pendant 10 secondes devant la classe 💃",
+      "Yghni / Chante un couplet ou un refrain d'une chanson 🎤",
+      "Imite un professeur de ton choix (avec respect et humour) 🎭",
+      "Fais 5 pompes ou 10 jumping jacks avec énergie 🏋️",
+      "Pitch un projet imaginaire complètement fou en 30 secondes en Darija 🚀",
+      "Prends une pose de grand CEO millionnaire pour la photo de classe 📸",
+      "Fais un compliment sincère et créatif à 2 de tes camarades 💖",
+      "Raconte une blague marocaine courte et marrante 🤣",
+      "Parle comme un présentateur du journal télévisé pendant 20 secondes 📺",
+      "Cite 3 qualités indispensables d'un bon entrepreneur en criant 'Yes we can!' 🌟"
+    ];
+
+    /* ==========================================================
+       2. WEB AUDIO SYNTHESIZER (Pure Web Audio, 0 dependencies)
+       ========================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTick(pitchRatio = 1) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          
+          osc.type = 'triangle';
+          const freq = 520 * (0.8 + pitchRatio * 0.4);
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(140, this.ctx.currentTime + 0.04);
+
+          gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.045);
+        } catch (e) {}
+      }
+
+      playWin() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+
+            gain.gain.setValueAtTime(0, this.ctx.currentTime + idx * 0.08);
+            gain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + idx * 0.08 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.08 + 0.4);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(this.ctx.currentTime + idx * 0.08);
+            osc.stop(this.ctx.currentTime + idx * 0.08 + 0.45);
+          } catch(e) {}
+        });
+      }
+
+      playPenalty() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(90, this.ctx.currentTime + 0.45);
+
+          gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.45);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.46);
+        } catch (e) {}
+      }
+
+      playTimerBeep(high = false) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(high ? 880 : 440, this.ctx.currentTime);
+
+          gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.09);
+        } catch (e) {}
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    /* ==========================================================
+       3. STANDALONE CONFETTI ENGINE (Zero Network Dependency)
+       ========================================================== */
+    class ConfettiEffect {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.animationId = null;
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+      }
+
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
+
+      burst() {
+        const count = 120;
+        const colors = ['#C084FC', '#F472B6', '#E9D5FF', '#FCE7F3', '#DDD6FE', '#34D399', '#FBBF24', '#60A5FA'];
+
+        for (let i = 0; i < count; i++) {
+          this.particles.push({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2 - 50,
+            w: Math.random() * 9 + 5,
+            h: Math.random() * 6 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 22,
+            vy: (Math.random() - 0.7) * 20 - 4,
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() - 0.5) * 12,
+            gravity: 0.42,
+            opacity: 1,
+            decay: Math.random() * 0.012 + 0.008
+          });
+        }
+
+        if (!this.animationId) {
+          this.render();
+        }
+      }
+
+      render() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.vx *= 0.985;
+          p.rotation += p.rotationSpeed;
+          p.opacity -= p.decay;
+
+          if (p.opacity <= 0 || p.y > this.canvas.height) {
+            this.particles.splice(i, 1);
+            continue;
+          }
+
+          this.ctx.save();
+          this.ctx.translate(p.x, p.y);
+          this.ctx.rotate((p.rotation * Math.PI) / 180);
+          this.ctx.globalAlpha = Math.max(0, p.opacity);
+          this.ctx.fillStyle = p.color;
+          this.ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          this.ctx.restore();
+        }
+
+        if (this.particles.length > 0) {
+          this.animationId = requestAnimationFrame(() => this.render());
+        } else {
+          this.animationId = null;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+      }
+    }
+
+    const confetti = new ConfettiEffect('confettiCanvas');
+
+    /* ==========================================================
+       4. INTERACTIVE CANVAS SPINNING WHEEL
+       ========================================================== */
+    class SpinningWheel {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.students = [...STUDENTS];
+        this.currentAngle = 0; // In radians
+        this.isSpinning = false;
+        this.selectedStudent = null;
+        this.lastSliceIndex = -1;
+
+        // Visual Palette: Alternating Soft Mauve & Pastel Pink
+        this.sliceColors = [
+          { bg: '#E9D5FF', text: '#4C1D95', border: '#C084FC' }, // Mauve clair
+          { bg: '#FCE7F3', text: '#831843', border: '#F472B6' }, // Rose pastel
+          { bg: '#DDD6FE', text: '#3B0764', border: '#A855F7' }, // Lavande doux
+          { bg: '#FBCFE8', text: '#701A75', border: '#EC4899' }, // Pastel fuchsia
+        ];
+
+        this.init();
+      }
+
+      init() {
+        this.draw();
+      }
+
+      getSliceCount() {
+        return this.students.length;
+      }
+
+      getSliceAngle() {
+        return (2 * Math.PI) / this.getSliceCount();
+      }
+
+      draw() {
+        const count = this.getSliceCount();
+        if (count === 0) return;
+
+        const dpr = window.devicePixelRatio || 1;
+        const width = 520;
+        const height = 520;
+
+        // Reset transform & scale for sharpness
+        this.canvas.width = width * dpr;
+        this.canvas.height = height * dpr;
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = width / 2 - 20;
+        const sliceAngle = this.getSliceAngle();
+
+        this.ctx.clearRect(0, 0, width, height);
+
+        // Outer Shadow Ring
+        this.ctx.save();
+        this.ctx.shadowColor = 'rgba(192, 132, 252, 0.25)';
+        this.ctx.shadowBlur = 18;
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, radius + 8, 0, 2 * Math.PI);
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.fill();
+        this.ctx.restore();
+
+        // Draw Slices
+        for (let i = 0; i < count; i++) {
+          const startAngle = this.currentAngle + i * sliceAngle;
+          const endAngle = startAngle + sliceAngle;
+          const colorPair = this.sliceColors[i % this.sliceColors.length];
+
+          this.ctx.save();
+          this.ctx.beginPath();
+          this.ctx.moveTo(centerX, centerY);
+          this.ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+          this.ctx.closePath();
+
+          // Fill slice
+          this.ctx.fillStyle = colorPair.bg;
+          this.ctx.fill();
+
+          // Slice border
+          this.ctx.lineWidth = 1.8;
+          this.ctx.strokeStyle = '#FFFFFF';
+          this.ctx.stroke();
+
+          // Text formatting
+          this.ctx.save();
+          this.ctx.translate(centerX, centerY);
+          this.ctx.rotate(startAngle + sliceAngle / 2);
+          this.ctx.textAlign = 'right';
+          this.ctx.textBaseline = 'middle';
+          this.ctx.fillStyle = colorPair.text;
+          this.ctx.font = 'bold 12.5px "Plus Jakarta Sans", system-ui, sans-serif';
+
+          // Truncate name if too long for slice
+          let name = this.students[i].name;
+          if (name.length > 20) {
+            name = name.substring(0, 18) + '…';
+          }
+
+          // Student status emoji marker if already played
+          if (this.students[i].status === 'success') {
+            name = '✅ ' + name;
+          } else if (this.students[i].status === 'penalty') {
+            name = '🎭 ' + name;
+          }
+
+          this.ctx.fillText(name, radius - 26, 0);
+          this.ctx.restore();
+
+          this.ctx.restore();
+        }
+
+        // Draw Outer Decorative Rim with Dots
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        this.ctx.lineWidth = 8;
+        this.ctx.strokeStyle = '#FFFFFF';
+        this.ctx.stroke();
+
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, radius + 4, 0, 2 * Math.PI);
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = '#E9D5FF';
+        this.ctx.stroke();
+
+        // Rim Light Studs
+        const numStuds = count * 2;
+        for (let j = 0; j < numStuds; j++) {
+          const studAngle = (j * 2 * Math.PI) / numStuds;
+          const sx = centerX + (radius + 2) * Math.cos(studAngle);
+          const sy = centerY + (radius + 2) * Math.sin(studAngle);
+
+          this.ctx.beginPath();
+          this.ctx.arc(sx, sy, 3, 0, 2 * Math.PI);
+          this.ctx.fillStyle = j % 2 === 0 ? '#C084FC' : '#F472B6';
+          this.ctx.fill();
+        }
+        this.ctx.restore();
+
+        // Center hub border
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, 38, 0, 2 * Math.PI);
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.shadowColor = 'rgba(168, 85, 247, 0.2)';
+        this.ctx.shadowBlur = 10;
+        this.ctx.fill();
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = '#E9D5FF';
+        this.ctx.stroke();
+        this.ctx.restore();
+      }
+
+      spin(onComplete) {
+        if (this.isSpinning) return;
+        this.isSpinning = true;
+        sound.init();
+
+        const count = this.getSliceCount();
+        const sliceAngle = this.getSliceAngle();
+
+        // Filter eligible students if toggle set
+        const keepAll = document.getElementById('removePickedToggle').checked;
+        let eligible = this.students;
+        if (!keepAll) {
+          const unplayed = this.students.filter(s => !s.played);
+          if (unplayed.length > 0) eligible = unplayed;
+        }
+
+        // Pick target random student from eligible
+        const targetStudent = eligible[Math.floor(Math.random() * eligible.length)];
+        const targetIndex = this.students.findIndex(s => s.id === targetStudent.id);
+
+        // The pointer is fixed at top: 3 * Math.PI / 2 (-90 deg)
+        // Wheel slice i is centered at (currentAngle + (i + 0.5) * sliceAngle)
+        // We want (finalAngle + (targetIndex + 0.5) * sliceAngle) % 2PI == 3PI/2
+        const pointerAngle = 1.5 * Math.PI;
+        
+        // Random slight jitter within slice center so it looks organic
+        const jitter = (Math.random() - 0.5) * (sliceAngle * 0.6);
+        const targetSliceCenter = (targetIndex + 0.5) * sliceAngle + jitter;
+
+        // Compute needed angle rotation
+        let neededAngle = pointerAngle - targetSliceCenter;
+        while (neededAngle < 0) neededAngle += 2 * Math.PI;
+
+        const currentNorm = this.currentAngle % (2 * Math.PI);
+        const extraRounds = (5 + Math.floor(Math.random() * 3)) * (2 * Math.PI);
+        const totalDelta = extraRounds + (neededAngle - currentNorm);
+
+        const startAngle = this.currentAngle;
+        const finalAngle = startAngle + totalDelta;
+        const duration = 4600; // ms
+        const startTime = performance.now();
+
+        const animate = (currentTime) => {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+
+          // Realistic Deceleration: Quintic Ease-Out
+          const easeOut = 1 - Math.pow(1 - progress, 4.5);
+          this.currentAngle = startAngle + totalDelta * easeOut;
+
+          // Detect slice boundary cross to trigger tick sound
+          const currentPointerRelative = (pointerAngle - (this.currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+          const currentSlice = Math.floor(currentPointerRelative / sliceAngle) % count;
+
+          if (currentSlice !== this.lastSliceIndex) {
+            this.lastSliceIndex = currentSlice;
+            sound.playTick(1 - progress * 0.7);
+          }
+
+          this.draw();
+
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            this.isSpinning = false;
+            this.selectedStudent = targetStudent;
+            this.draw();
+            if (onComplete) onComplete(targetStudent);
+          }
+        };
+
+        requestAnimationFrame(animate);
+      }
+    }
+
+    /* ==========================================================
+       5. GAME CONTROLLER & STATE MANAGEMENT
+       ========================================================== */
+    class GameController {
+      constructor() {
+        this.students = [...STUDENTS];
+        this.questions = [...QUESTIONS];
+        this.usedQuestionIds = new Set();
+        this.currentStudent = null;
+        this.currentQuestion = null;
+        this.selectedOptionKey = null;
+        this.timerInterval = null;
+        this.timerSeconds = 10;
+
+        this.wheel = new SpinningWheel('wheelCanvas');
+        this.initDOM();
+        this.renderStudentsList();
+        this.renderQuestionsBank();
+      }
+
+      initDOM() {
+        // Spin Button
+        const spinBtn = document.getElementById('spinBtn');
+        spinBtn.addEventListener('click', () => this.handleSpin());
+
+        // Sound Toggle
+        const soundBtn = document.getElementById('soundToggleBtn');
+        soundBtn.addEventListener('click', () => this.toggleSound());
+
+        // Fullscreen Toggle
+        const fsBtn = document.getElementById('fullscreenBtn');
+        fsBtn.addEventListener('click', () => this.toggleFullscreen());
+
+        // Questions Bank Drawer
+        const bankBtn = document.getElementById('questionsBankBtn');
+        bankBtn.addEventListener('click', () => this.openBankModal());
+        document.getElementById('closeBankModalBtn').addEventListener('click', () => this.closeBankModal());
+
+        // Reset Game
+        document.getElementById('resetGameBtn').addEventListener('click', () => this.resetGame());
+
+        // Quiz Modal Elements
+        document.getElementById('closeQuizModalBtn').addEventListener('click', () => this.closeQuizModal());
+        document.getElementById('submitAnswerBtn').addEventListener('click', () => this.handleSubmitAnswer());
+
+        // Success Modal Next
+        document.getElementById('successNextBtn').addEventListener('click', () => {
+          document.getElementById('successModal').classList.add('hidden');
+        });
+
+        // Penalty Modal Choice Buttons
+        document.getElementById('btnYghni').addEventListener('click', () => this.openChallenge('sing'));
+        document.getElementById('btnIchth').addEventListener('click', () => this.openChallenge('dance'));
+        document.getElementById('btnBackToChoices').addEventListener('click', () => this.resetPenaltyView());
+
+        // Penalty Modal Done
+        document.getElementById('penaltyDoneBtn').addEventListener('click', () => {
+          this.resetPenaltyView();
+          document.getElementById('penaltyModal').classList.add('hidden');
+        });
+
+        // Penalty Timer
+        document.getElementById('startTimerBtn').addEventListener('click', () => this.startChallengeTimer());
+      }
+
+      handleSpin() {
+        if (this.wheel.isSpinning) return;
+
+        const spinBtn = document.getElementById('spinBtn');
+        spinBtn.disabled = true;
+        spinBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        document.getElementById('currentTurnName').textContent = 'La roue tourne... 🌀';
+
+        this.wheel.spin((selectedStudent) => {
+          spinBtn.disabled = false;
+          spinBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          document.getElementById('currentTurnName').textContent = selectedStudent.name;
+
+          setTimeout(() => {
+            this.openQuizForStudent(selectedStudent);
+          }, 450);
+        });
+      }
+
+      openQuizForStudent(student) {
+        this.currentStudent = student;
+        this.selectedOptionKey = null;
+
+        // Draw a random question not yet answered, or reshuffle if all used
+        if (this.usedQuestionIds.size >= this.questions.length) {
+          this.usedQuestionIds.clear();
+        }
+
+        const available = this.questions.filter(q => !this.usedQuestionIds.has(q.id));
+        this.currentQuestion = available[Math.floor(Math.random() * available.length)];
+        this.usedQuestionIds.add(this.currentQuestion.id);
+
+        // Populate Quiz Modal
+        document.getElementById('modalStudentTitle').textContent = `${student.name}, c'est ton tour ! 🎯`;
+        document.getElementById('modalQuestionBadge').textContent = `Question N° ${this.currentQuestion.id} / 15`;
+        document.getElementById('quizQuestionText').textContent = this.currentQuestion.question;
+
+        const optionsContainer = document.getElementById('quizOptionsContainer');
+        optionsContainer.innerHTML = '';
+
+        this.currentQuestion.options.forEach(opt => {
+          const card = document.createElement('div');
+          card.className = 'option-card flex items-center gap-3.5 p-4 rounded-2xl border border-mauve-200 cursor-pointer select-none bg-white/70 shadow-sm';
+          card.setAttribute('data-key', opt.key);
+
+          card.innerHTML = `
+            <div class="opt-indicator w-8 h-8 rounded-xl font-bold flex items-center justify-center text-sm border border-mauve-300 bg-mauve-50 text-mauve-900 transition-colors">
+              ${opt.key}
+            </div>
+            <div class="text-sm sm:text-base font-medium text-gray-800 flex-1 leading-snug">
+              ${opt.text}
+            </div>
+          `;
+
+          card.addEventListener('click', () => {
+            this.selectOption(opt.key);
+          });
+
+          optionsContainer.appendChild(card);
+        });
+
+        // Reset submit button & hint
+        const submitBtn = document.getElementById('submitAnswerBtn');
+        submitBtn.disabled = true;
+        document.getElementById('selectionHint').textContent = 'Sélectionnez une option pour continuer.';
+
+        // Show Modal
+        document.getElementById('quizModal').classList.remove('hidden');
+      }
+
+      selectOption(key) {
+        this.selectedOptionKey = key;
+        const optionsContainer = document.getElementById('quizOptionsContainer');
+        const cards = optionsContainer.querySelectorAll('.option-card');
+
+        cards.forEach(card => {
+          const cardKey = card.getAttribute('data-key');
+          const indicator = card.querySelector('.opt-indicator');
+          if (cardKey === key) {
+            card.classList.add('selected');
+            indicator.classList.remove('bg-mauve-50', 'text-mauve-900');
+            indicator.classList.add('bg-mauve-600', 'text-white', 'border-mauve-600');
+          } else {
+            card.classList.remove('selected');
+            indicator.classList.remove('bg-mauve-600', 'text-white', 'border-mauve-600');
+            indicator.classList.add('bg-mauve-50', 'text-mauve-900');
+          }
+        });
+
+        const submitBtn = document.getElementById('submitAnswerBtn');
+        submitBtn.disabled = false;
+        document.getElementById('selectionHint').textContent = `Option (${key}) sélectionnée. Prêt à valider !`;
+      }
+
+      handleSubmitAnswer() {
+        if (!this.selectedOptionKey || !this.currentQuestion || !this.currentStudent) return;
+
+        this.closeQuizModal();
+
+        const isCorrect = this.selectedOptionKey === this.currentQuestion.correct;
+        const studentIndex = this.students.findIndex(s => s.id === this.currentStudent.id);
+
+        if (studentIndex !== -1) {
+          this.students[studentIndex].played = true;
+          this.students[studentIndex].status = isCorrect ? 'success' : 'penalty';
+        }
+
+        // Update wheel and list
+        this.wheel.students = [...this.students];
+        this.wheel.draw();
+        this.renderStudentsList();
+
+        if (isCorrect) {
+          // CELEBRATION MODAL
+          sound.playWin();
+          confetti.burst();
+
+          const correctOpt = this.currentQuestion.options.find(o => o.key === this.currentQuestion.correct);
+          document.getElementById('successAnswerText').textContent = `${correctOpt.key}) ${correctOpt.text}`;
+          document.getElementById('successModal').classList.remove('hidden');
+        } else {
+          // PENALTY / ḤKMA MODAL
+          sound.playPenalty();
+
+          const correctOpt = this.currentQuestion.options.find(o => o.key === this.currentQuestion.correct);
+          document.getElementById('penaltyCorrectAnswerText').textContent = `${correctOpt.key}) ${correctOpt.text}`;
+          
+          this.resetPenaltyView();
+          document.getElementById('penaltyModal').classList.remove('hidden');
+        }
+      }
+
+      openChallenge(type) {
+        const choiceView = document.getElementById('penaltyChoiceView');
+        const videoView = document.getElementById('penaltyVideoView');
+        const iframe = document.getElementById('penaltyVideoIframe');
+        const title = document.getElementById('penaltyVideoTitle');
+        const directLink = document.getElementById('penaltyDirectYoutubeLink');
+
+        if (type === 'sing') {
+          title.innerHTML = '🎤 <span class="text-mauve-900 font-extrabold">Défi Yghni :</span> <span class="text-mauve-700">Chanson Officielle du Challenge</span>';
+          const videoUrl = 'https://youtu.be/A6_Iq-JmkI0?si=oKPcfD24U0Bj0DMA';
+          directLink.href = videoUrl;
+          iframe.src = 'https://www.youtube.com/embed/A6_Iq-JmkI0?autoplay=1';
+        } else if (type === 'dance') {
+          title.innerHTML = '💃 <span class="text-pastelPink-900 font-extrabold">Défi Ichth :</span> <span class="text-pastelPink-700">Chorégraphie Officielle du Challenge</span>';
+          const videoUrl = 'https://youtu.be/6EkwjKqk2_8?si=cK8QlTAsr_S1ks4h';
+          directLink.href = videoUrl;
+          iframe.src = 'https://www.youtube.com/embed/6EkwjKqk2_8?autoplay=1';
+        }
+
+        choiceView.classList.add('hidden');
+        videoView.classList.remove('hidden');
+        this.stopChallengeTimer();
+        this.timerSeconds = 10;
+        document.getElementById('timerDisplay').textContent = '10';
+      }
+
+      resetPenaltyView() {
+        const choiceView = document.getElementById('penaltyChoiceView');
+        const videoView = document.getElementById('penaltyVideoView');
+        const iframe = document.getElementById('penaltyVideoIframe');
+        if (iframe) iframe.src = '';
+        this.stopChallengeTimer();
+        this.timerSeconds = 10;
+        const display = document.getElementById('timerDisplay');
+        if (display) display.textContent = '10';
+        const timerBtn = document.getElementById('startTimerBtn');
+        if (timerBtn) {
+          timerBtn.classList.remove('bg-rose-300', 'animate-pulse');
+          timerBtn.classList.add('bg-mauve-100');
+        }
+        if (videoView) videoView.classList.add('hidden');
+        if (choiceView) choiceView.classList.remove('hidden');
+      }
+
+      startChallengeTimer() {
+        this.stopChallengeTimer();
+        this.timerSeconds = 10;
+        const display = document.getElementById('timerDisplay');
+        const btn = document.getElementById('startTimerBtn');
+        
+        display.textContent = this.timerSeconds;
+        btn.classList.add('bg-rose-300', 'animate-pulse');
+
+        this.timerInterval = setInterval(() => {
+          this.timerSeconds--;
+          display.textContent = this.timerSeconds;
+          
+          if (this.timerSeconds > 0) {
+            sound.playTimerBeep(false);
+          } else {
+            sound.playTimerBeep(true);
+            this.stopChallengeTimer();
+            display.textContent = "0s ⏰";
+            btn.classList.remove('bg-rose-300', 'animate-pulse');
+          }
+        }, 1000);
+      }
+
+      stopChallengeTimer() {
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+      }
+
+      closeQuizModal() {
+        document.getElementById('quizModal').classList.add('hidden');
+      }
+
+      openBankModal() {
+        document.getElementById('bankModal').classList.remove('hidden');
+      }
+
+      closeBankModal() {
+        document.getElementById('bankModal').classList.add('hidden');
+      }
+
+      renderStudentsList() {
+        const container = document.getElementById('studentsListContainer');
+        container.innerHTML = '';
+
+        let passedCount = 0;
+
+        this.students.forEach((student, index) => {
+          if (student.played) passedCount++;
+
+          const row = document.createElement('div');
+          row.className = `flex items-center justify-between p-2.5 rounded-xl border transition-all text-xs cursor-pointer ${
+            student.status === 'success'
+              ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900'
+              : student.status === 'penalty'
+              ? 'bg-pastelPink-50/80 border-pastelPink-200 text-pastelPink-900'
+              : 'bg-white/60 hover:bg-mauve-50/80 border-mauve-100 text-mauve-950'
+          }`;
+
+          let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-mauve-100 text-mauve-600">En attente</span>`;
+          if (student.status === 'success') {
+            statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">✅ Juste</span>`;
+          } else if (student.status === 'penalty') {
+            statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pastelPink-200 text-pastelPink-800 border border-pastelPink-300 flex items-center gap-1">🎭 Ḥkma</span>`;
+          }
+
+          row.innerHTML = `
+            <div class="flex items-center gap-2 font-semibold">
+              <span class="w-5 h-5 rounded-md bg-mauve-100 flex items-center justify-center text-[11px] font-mono text-mauve-700">${index + 1}</span>
+              <span>${student.name}</span>
+            </div>
+            ${statusBadge}
+          `;
+
+          // Clicking a student allows direct testing or picking!
+          row.addEventListener('click', () => {
+            if (!this.wheel.isSpinning) {
+              this.openQuizForStudent(student);
+            }
+          });
+
+          container.appendChild(row);
+        });
+
+        // Update progress badge & bar
+        document.getElementById('progressBadge').textContent = `${passedCount} / 15 Passés`;
+        const percentage = Math.round((passedCount / 15) * 100);
+        document.getElementById('progressBar').style.width = `${percentage}%`;
+      }
+
+      renderQuestionsBank() {
+        const container = document.getElementById('bankListContainer');
+        container.innerHTML = '';
+
+        this.questions.forEach((q) => {
+          const item = document.createElement('div');
+          item.className = 'p-3.5 rounded-2xl border border-mauve-100 bg-mauve-50/40 hover:bg-white transition-colors';
+          
+          let optionsHtml = q.options.map(o => `
+            <div class="flex items-start gap-2 py-0.5 ${o.key === q.correct ? 'font-bold text-emerald-700' : 'text-gray-600'}">
+              <span class="w-4">${o.key})</span>
+              <span>${o.text} ${o.key === q.correct ? '✓ (Correct)' : ''}</span>
+            </div>
+          `).join('');
+
+          item.innerHTML = `
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-bold text-mauve-900 text-xs">Question ${q.id}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">Réponse : ${q.correct}</span>
+            </div>
+            <p class="font-semibold text-gray-900 mb-2">${q.question}</p>
+            <div class="text-xs pl-2 border-l-2 border-mauve-200">
+              ${optionsHtml}
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      toggleSound() {
+        sound.enabled = !sound.enabled;
+        const icon = document.getElementById('soundIcon');
+        const label = document.getElementById('soundLabel');
+        if (sound.enabled) {
+          icon.textContent = '🔊';
+          label.textContent = 'Son Activé';
+        } else {
+          icon.textContent = '🔇';
+          label.textContent = 'Son Coupé';
+        }
+      }
+
+      toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+          document.getElementById('fsIcon').textContent = '🗗';
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          }
+          document.getElementById('fsIcon').textContent = '⛶';
+        }
+      }
+
+      resetGame() {
+        if (confirm("Voulez-vous réinitialiser tous les tours de la classe ?")) {
+          this.students.forEach(s => {
+            s.played = false;
+            s.status = 'pending';
+          });
+          this.usedQuestionIds.clear();
+          this.wheel.students = [...this.students];
+          this.wheel.draw();
+          this.renderStudentsList();
+          document.getElementById('currentTurnName').textContent = 'Prêt à tourner !';
+        }
+      }
+    }
+
+    // Start App when loaded
+    window.addEventListener('DOMContentLoaded', () => {
+      window.gameApp = new GameController();
+    });
+  </script>
+</body>
+</html>
